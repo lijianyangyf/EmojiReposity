@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">localShare</string>
+    <string name="ImagePreviewDesc">"预览图片"</string>
+    <string name="ImageBtnCloseDesc">"关闭预览"</string>
 </resources>

@@ -11,8 +11,9 @@ import com.example.localshare.data.EmojiEntity
 import com.example.localshare.databinding.ItemEmojiBinding
 import java.io.File
 
-class EmojiAdapter :
-    ListAdapter<EmojiEntity, EmojiAdapter.EmojiViewHolder>(DiffCallback) {
+class EmojiAdapter (
+        private val onItemClick: (EmojiEntity) -> Unit
+        ):ListAdapter<EmojiEntity, EmojiAdapter.EmojiViewHolder>(DiffCallback) {
     companion object DiffCallback : DiffUtil.ItemCallback<EmojiEntity>() {
         override fun areItemsTheSame(oldItem: EmojiEntity, newItem: EmojiEntity): Boolean {
             return oldItem.id == newItem.id
@@ -23,7 +24,12 @@ class EmojiAdapter :
         }
     }
 
-    class EmojiViewHolder(private val binding: ItemEmojiBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class EmojiViewHolder(private val binding: ItemEmojiBinding) : RecyclerView.ViewHolder(binding.root) {
+        init{
+            binding.root.setOnClickListener {
+                onItemClick(getItem(bindingAdapterPosition))
+            }
+        }
         fun bind(item:EmojiEntity) {
             val file = File(item.filePath)
 
