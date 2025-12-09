@@ -11,7 +11,7 @@ import com.example.localshare.data.EmojiRepository
 import kotlinx.coroutines.launch
 
 class EmojiViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: EmojiRepository
+    val repository: EmojiRepository
     val emojis: LiveData<List<EmojiEntity>>
 
     init {
@@ -22,6 +22,12 @@ class EmojiViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             repository.scanAndInsertIfEmpty(application)
+        }
+    }
+
+    fun refreshFromDisk() {
+        viewModelScope.launch {
+            repository.scanAndInsertAll(getApplication())
         }
     }
 }

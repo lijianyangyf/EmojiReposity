@@ -36,6 +36,38 @@ class EmojiRepository(private val emojiDao: EmojiDao) {
         }
     }
 
+    suspend fun scanAndInsertAll(context: Context) = withContext(Dispatchers.IO){
+        val emojiDir= getEmojiDir(context)
+        if (!emojiDir.exists()){
+            emojiDir.mkdirs()
+            return@withContext
+        }
+
+        val exts = listOf("png","jpg","jpeg","gif","webp")
+
+        val diskFiles = emojiDir.listFiles { file ->
+            val name = file.name.lowercase()
+            exts.any { ext-> name.endsWith(ext) }
+        } ?: emptyArray()
+
+        if(diskFiles.isEmpty()) return@withContext
+
+        val dbPathSet = emojiDao.getAllPaths().toHashSet()
+
+        val newEntities = diskFiles.filter { file ->
+            !dbPathSet.contains(file.absolutePath)
+        }. map{ file ->
+            EmojiEntity(
+                filePath = file.absolutePath,
+                desc = file.nameWithoutExtension
+            )
+        }
+
+        if (newEntities.isNotEmpty()){
+            emojiDao.insertAll(newEntities)
+        }
+    }
+
     fun getEmojiDir(context: Context): File {
         val baseDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File(baseDir, "emoji")

@@ -15,4 +15,7 @@ interface EmojiDao {
 
     @Query("SELECT COUNT(*) FROM emoji")
     suspend fun count(): Int
+
+    @Query("SELECT file_path FROM emoji")
+    suspend fun getAllPaths(): List<String>
 }
