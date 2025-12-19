@@ -4,8 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.view.View
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: EmojiViewModel by viewModels()
 
+    private lateinit var  adapter: EmojiAdapter
+
     private val importLauncher = registerForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris: List<Uri> ->
@@ -38,17 +45,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val adapter = EmojiAdapter{emoji->
+        adapter = EmojiAdapter(
+            onItemClick = {emoji->
             val intent = Intent(this, PreviewActivity::class.java)
             intent.putExtra("emoji_path", emoji.filePath)
             startActivity(intent)
-        }
+            },
+            onLongClick = {
+                enterEditMode()
+            }
+        )
 
         binding.recyclerViewEmoji.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 4)
             setHasFixedSize(true)
             itemAnimator = null
-            this.adapter = adapter
+            this.adapter = this@MainActivity.adapter
         }
 
         viewModel.emojis.observe(this) { list ->
@@ -58,6 +70,38 @@ class MainActivity : AppCompatActivity() {
         binding.btnImport.setOnClickListener {
             importLauncher.launch(arrayOf("image/*"))
         }
+
+        binding.btnCancelDelete.setOnClickListener {
+            exitEditMode()
+        }
+
+        binding.btnConfirmDelete.setOnClickListener {
+            val selected = adapter.getSelectedList()
+            if (selected.isNotEmpty()) {
+                AlertDialog.Builder(this)
+                    .setTitle("Delete Emojis")
+                    .setMessage("Are you sure you want to delete ${selected.size} selected emojis?")
+                    .setPositiveButton("Delete") { _, _ ->
+                        viewModel.deleteSelected(selected)
+                        exitEditMode()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            } else {
+                Toast.makeText(this,"please choose Emoji first",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (adapter.isEditMode) {
+                    exitEditMode()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     private fun importEmojis(uris: List<Uri>) {
@@ -129,5 +173,19 @@ class MainActivity : AppCompatActivity() {
             val hashBytes = digest.digest()
             BigInteger(1, hashBytes).toString(16).padStart(32, '0')
         }
+    }
+
+    private fun enterEditMode() {
+        if (adapter.isEditMode) return
+        adapter.isEditMode = true
+        binding.layoutEditMode.visibility = View.VISIBLE
+        binding.btnImport.visibility = View.GONE // 隐藏导入按钮避免冲突
+    }
+
+    // 辅助方法: 退出编辑模式
+    private fun exitEditMode() {
+        adapter.isEditMode = false
+        binding.layoutEditMode.visibility = View.GONE
+        binding.btnImport.visibility = View.VISIBLE
     }
 }

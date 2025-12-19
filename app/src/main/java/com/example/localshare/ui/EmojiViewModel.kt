@@ -30,4 +30,10 @@ class EmojiViewModel(application: Application) : AndroidViewModel(application) {
             repository.scanAndInsertAll(getApplication())
         }
     }
+
+    fun deleteSelected(emojis: List<EmojiEntity>) {
+        viewModelScope.launch {
+            repository.deleteEmojis(emojis)
+        }
+    }
 }

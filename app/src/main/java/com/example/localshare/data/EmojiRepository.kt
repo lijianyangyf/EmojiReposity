@@ -68,6 +68,21 @@ class EmojiRepository(private val emojiDao: EmojiDao) {
         }
     }
 
+    suspend fun deleteEmojis(emojis: List<EmojiEntity>) = withContext(Dispatchers.IO) {
+        emojis.forEach { entity ->
+            try {
+                val file = File(entity.filePath)
+                if (file.exists()) {
+                    file.delete()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        emojiDao.deleteList(emojis)
+    }
+
     fun getEmojiDir(context: Context): File {
         val baseDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File(baseDir, "emoji")

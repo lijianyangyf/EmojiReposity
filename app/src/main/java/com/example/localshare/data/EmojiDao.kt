@@ -1,5 +1,6 @@
 package com.example.localshare.data
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -18,4 +19,7 @@ interface EmojiDao {
 
     @Query("SELECT file_path FROM emoji")
     suspend fun getAllPaths(): List<String>
+
+    @Delete
+    suspend fun deleteList(emoji: List<EmojiEntity>)
 }
