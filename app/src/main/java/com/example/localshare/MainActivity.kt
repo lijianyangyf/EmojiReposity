@@ -79,16 +79,16 @@ class MainActivity : AppCompatActivity() {
             val selected = adapter.getSelectedList()
             if (selected.isNotEmpty()) {
                 AlertDialog.Builder(this)
-                    .setTitle("Delete Emojis")
-                    .setMessage("Are you sure you want to delete ${selected.size} selected emojis?")
-                    .setPositiveButton("Delete") { _, _ ->
+                    .setTitle("删除表情")
+                    .setMessage("你确定要删除 ${selected.size} 张表情吗?")
+                    .setPositiveButton("删除") { _, _ ->
                         viewModel.deleteSelected(selected)
                         exitEditMode()
                     }
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton("取消", null)
                     .show()
             } else {
-                Toast.makeText(this,"please choose Emoji first",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,"必须先选择表情才能删除",Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -179,10 +179,9 @@ class MainActivity : AppCompatActivity() {
         if (adapter.isEditMode) return
         adapter.isEditMode = true
         binding.layoutEditMode.visibility = View.VISIBLE
-        binding.btnImport.visibility = View.GONE // 隐藏导入按钮避免冲突
+        binding.btnImport.visibility = View.GONE
     }
 
-    // 辅助方法: 退出编辑模式
     private fun exitEditMode() {
         adapter.isEditMode = false
         binding.layoutEditMode.visibility = View.GONE

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">localShare</string>
-    <string name="ImagePreviewDesc">"预览图片"</string>
+    <string name="ImagePreviewDesc">"预览表情"</string>
     <string name="ImageBtnCloseDesc">"关闭预览"</string>
-    <string name="ImportBtnDesc">"导入图片"</string>
+    <string name="ImportBtnDesc">"导入表情"</string>
+    <string name="btnCancelDeleteText">"取消"</string>
+    <string name="btnConfirmDeleteText">"删除"</string>
 </resources>
