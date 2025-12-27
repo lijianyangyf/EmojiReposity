@@ -1,6 +1,6 @@
-# EmojiMaster (本地表情包管理器)
+# EmojiManager (本地表情包管理器)
 
-这是一个基于 Android Jetpack 架构构建的轻量级本地表情包管理应用。项目旨在演示现代 Android 开发的最佳实践，特别是针对 Android 10+ 分区存储（Scoped Storage）的严格适配与高效的本地文件管理。
+这是一个基于 Android Jetpack 架构构建的轻量级本地表情包管理应用。项目旨在演示现代 Android 开发的最佳实践，特别是针对 Android 10+ 分区存储（Scoped Storage）的严格适配与高效的本地表情包管理器。
 
 ## 🌟 核心功能
 
@@ -56,4 +56,3 @@ com.example.localshare
 
 ---
 **License**: MIT
-**Maintainer**: Android 架构师
